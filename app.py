@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 import datetime
 
+date_yr = datetime.date(2016, 8, 23)
+
 # Database Setup
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
@@ -36,13 +38,15 @@ def home():
         f"/api/v1.0/<start>/<end>"
         )
 
+# Defining Routes
+
 @app.route("/api/v1.0/precipitation")
 def prcp():
     session = Session(engine)
 
     # query the database 
     results = session.query(Measurement.date,Measurement.prcp).\
-              filter(Measurement.date > datetime.date(2016, 8, 23)).\
+              filter(Measurement.date > date_yr).\
               order_by(Measurement.date.desc()).all()
 
     session.close()
@@ -52,17 +56,44 @@ def prcp():
     for date,prcp in results:
         prcp_dict = {}
         prcp_dict["date"] = date
-        prcp_dict["prcp"] = prcp
+        prcp_dict['prcp'] = prcp
         prcp_values.append(prcp_dict)
     return jsonify(prcp_values)
 
 
+@app.route("/api/v1.0/stations")
+def stat():
+    session = Session(engine)
+
+    # query the database
+    results_station = session.query(Station.name)
+
+    session.close()
+    
+    # create a list for list of stations
+    station_list=[]
+    for st in results_station:
+        station_list.append(st)
+    return jsonify(station_list)
+
+@app.route("/api/v1.0/tobs")
+def tob():
+    session = Session(engine)
+
+    # query the database
+    results_tobs = session.query(Measurement.date,Measurement.tobs).\
+                   filter(Measurement.station=='USC00519281').\
+                   filter(Measurement.date > date_yr).all()
+    session.close()
+
+    # create a list of temp observations for the previous year
+    tobs_list=[]
+    for temp in results_tobs:
+        tobs_list.append(temp)
+    return jsonify(tobs_list)
+
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
 
 
 
