@@ -5,6 +5,7 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 import datetime
+import html
 
 date_yr = datetime.date(2016, 8, 23)
 
@@ -28,14 +29,15 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     print("Welcome to Home page")
+#    <img src="Images/surfs-up.png">
     return (
         f"Welcome to Home page!<br/>"
         f"Available routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/start_date/<start_date><br/>"
+        f"/api/v1.0/start_date<start_date>/end_date<end_date>"
         )
 
 # Defining Routes
@@ -91,6 +93,34 @@ def tob():
     for temp in results_tobs:
         tobs_list.append(temp)
     return jsonify(tobs_list)
+
+
+'''When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.'''    
+
+@app.route("/api/v1.0/start_date/<start_date>")
+def calc_temps(start_date):
+    session =  Session(engine)
+
+    result_sd = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+                filter(Measurement.date >= start_date).all()
+    
+    session.close()
+
+    return jsonify(result_sd)
+
+'''When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.'''    
+
+@app.route("/api/v1.0/start_date<start_date>/end_date<end_date>")
+def calc_temp(start_date,end_date):
+    session = Session(engine)
+
+    result_ob = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+                filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+
+    session.close()
+
+    return jsonify(result_ob)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
