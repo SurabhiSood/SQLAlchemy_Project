@@ -1,5 +1,5 @@
 # Importing Flask
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -28,16 +28,25 @@ app = Flask(__name__)
 # Define Route
 @app.route('/')
 def home():
-    print("Welcome to Home page")
-#    <img src="Images/surfs-up.png">
     return (
-        f"Welcome to Home page!<br/>"
-        f"Available routes:<br/>"
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/start_date/<start_date><br/>"
-        f"/api/v1.0/start_date<start_date>/end_date<end_date>"
+        """
+        <!DOCTYPE html>
+        <head>
+            <h1>Welcome to Home Page!!</h1>
+            <br>
+        </head>
+        <body>
+        <img src="https://i.pinimg.com/originals/f6/5b/24/f65b24e6b12f51af290dd3460c340da0.jpg" height="300" width="300">
+        <h2>Available routes:</h2>
+        <ul>
+        <li><h3>api/v1.0/precipitation<h3></li>
+        <li><h3>/api/v1.0/stations</h3></li>
+        <li><h3>/api/v1.0/tobs</h3></li>
+        <li><h3>/api/v1.0/<start_date></h3></li>
+        <li><h3>/api/v1.0/<start_date>/<end_date></h3></li>
+        </ul>
+        </body>
+        """
         )
 
 # Defining Routes
@@ -53,14 +62,21 @@ def prcp():
 
     session.close()
 
-    # create a dictionary of the result 
+    # create a dictionary of the result with date as key
+    #"2017-08-23": 0.0
     prcp_values = []
     for date,prcp in results:
         prcp_dict = {}
+
         prcp_dict["date"] = date
-        prcp_dict['prcp'] = prcp
-        prcp_values.append(prcp_dict)
+        prcp_dict["prcp"] = prcp
+
+        new_dict = {prcp_dict["date"]:prcp_dict["prcp"]}
+
+        prcp_values.append(new_dict)
+        
     return jsonify(prcp_values)
+
 
 
 @app.route("/api/v1.0/stations")
@@ -97,7 +113,7 @@ def tob():
 
 '''When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.'''    
 
-@app.route("/api/v1.0/start_date/<start_date>")
+@app.route("/api/v1.0/<start_date>")
 def calc_temps(start_date):
     session =  Session(engine)
 
@@ -110,16 +126,13 @@ def calc_temps(start_date):
 
 '''When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.'''    
 
-@app.route("/api/v1.0/start_date<start_date>/end_date<end_date>")
-def calc_temp(start_date,end_date):
+@app.route("/api/v1.0/<start>/<end>")
+def calc_temp_multi_days(start,end):
     session = Session(engine)
-
-    result_ob = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-                filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
-
+    result_ob = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
     session.close()
-
     return jsonify(result_ob)
+
     
 
 if __name__ == "__main__":
