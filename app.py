@@ -56,28 +56,25 @@ def prcp():
     session = Session(engine)
 
     # query the database 
-    results = session.query(Measurement.date,Measurement.prcp).\
-              filter(Measurement.date > date_yr).\
-              order_by(Measurement.date.desc()).all()
+    results = session.query(Measurement.date,Measurement.prcp).all()
 
     session.close()
 
-    # create a dictionary of the result with date as key
-    #"2017-08-23": 0.0
-    prcp_values = []
-    for date,prcp in results:
-        prcp_dict = {}
+    # create a dictionary of the result and extract date and prc values
+    prcp_values = []  
+    for date,prcp in results: 
+        prcp_dict = {} 
 
         prcp_dict["date"] = date
         prcp_dict["prcp"] = prcp
 
+        # create a new dict where the date is Key and value as prcp
         new_dict = {prcp_dict["date"]:prcp_dict["prcp"]}
-
+        
+        # appending the elements from new_dict into prcp_values list
         prcp_values.append(new_dict)
         
     return jsonify(prcp_values)
-
-
 
 @app.route("/api/v1.0/stations")
 def stat():
@@ -85,7 +82,6 @@ def stat():
 
     # query the database
     results_station = session.query(Station.name)
-
     session.close()
     
     # create a list for list of stations
@@ -131,14 +127,7 @@ def calc_temp_multi_days(start,end):
     session = Session(engine)
     result_ob = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
     session.close()
-    return jsonify(result_ob)
-
-    
+    return jsonify(result_ob)   
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-
