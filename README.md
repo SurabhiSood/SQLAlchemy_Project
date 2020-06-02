@@ -21,13 +21,13 @@ To find the minimum, average, and maximum temperatures of the most active statio
 
 As a visual, I also wanted to display a histogram of the temperature observations for one year from the most active station. Using the two date endpoints from the precipitation analysis, I queried one year’s worth of temperature observations and filtered for the most active station. I then had to convert the results into a series by using np.ravel and pd.Series. Using this series, I used .plot.hist() to plot a histogram.
 
-<img src ="https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/station-histogram.png)" width="500" height="500" />
+<img src ="https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/station-histogram.png" width="300" height="300" />
 
 Comparative Dates
 
 For this analysis, I wanted to retrieve and plot the minimum, average, and maximum temperatures for a selected two week period. A function was created to calculate those temperatures based on two parameters: the start and end dates. A bar chart was then created to display the average temperature, with an error bar based on the maximum and minimum temperature difference.
 
-<img src="https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/temperature.png" width="500" height="500" />
+<img src="https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/temperature.png" width="300" height="300" />
 
 Next, I gathered the total amount of rainfall for each station and displayed that alongside other key facts (station name, latitude, longitude, and elevation) for each station. Because this data was stored in two separate tables, I merged the tables on “station” using .filter(Measurement.station == Station.station).
 
@@ -45,7 +45,7 @@ A function (daily_normals) was first created to query the minimum, average, and 
 
 To store this information in a data frame, I created empty lists to store the minimum, average, and maximum temperatures, and the daily normals. I appended each value to its respective list using for loops, and use those now populated lists to create a data frame. From that data frame, I plotted the data in a stacked area plot.
 
-<img src="https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/daily-normals.png" width="500" height="500" />
+<img src="https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/daily-normals.png" width="300" height="300" />
 
 ## Flask API
 
