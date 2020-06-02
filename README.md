@@ -9,7 +9,7 @@ To start the analysis, I first had to access the data by creating an engine with
 
 After the data was accessed, I moved onto the precipitation analysis: plotting the precipitation data from the last 12 months. I first queried the precipitation data for the most recent date with session.query() and sorted the results in descending before grabbing the first result. I then converted that result into a datetime object named entered_date. Using entered_date, I calculated the date from one year ago using dt.timedelta(). With these two date endpoints as filters, I was able to retrieve a year’s worth of data. The results were stored in a variable one_year_prcp, which I used to make a data frame with pd.DataFrame(). From that data frame, I plotted the precipitation data.
 
-<img src= "https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/precipitation.png" width="200" height="200" />
+<img src= "https://github.com/SurabhiSood/SQLAlchemy_Project/blob/master/Images/precipitation.png" width="500" height="500" />
 
 ### Station
 
